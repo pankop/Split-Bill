@@ -1,6 +1,6 @@
+import { useState } from "react";
 import FormAddFriend from "./components/FormAddFriend";
 import FormSplitBill from "./components/FormSpitBill";
-import Friend from "./components/Friend";
 import Friendlist from "./components/Friendlist";
 
 const initialFriends = [
@@ -25,15 +25,60 @@ const initialFriends = [
 ];
 
 export default function App() {
+  const [friends, setfriends] = useState(initialFriends);
+  const [showAddFriend, setShowAddFriend] = useState(false); // false karena ini auto sembunyi form tambah temannya nanti
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
+  function handleAddFriend(friend) {
+    setfriends((friends) => [...friends, friend]);
+  }
+  function handleShowAddFriend() {
+    setShowAddFriend((showAddFriend) => !showAddFriend);
+    setSelectedFriend(null);
+  }
+
+  function handleSelectedFriend(friend) {
+    setSelectedFriend((selected) =>
+      selected?.id === friend.id ? null : friend
+    );
+
+    setShowAddFriend(false);
+  }
+
+  function handleSplitBill(value) {
+    setfriends(
+      friends.map((friend) => {
+        if (friend.id === selectedFriend?.id) {
+          return {
+            ...friend,
+            balance: friend.balance + value,
+          };
+        }
+        return friend;
+      })
+    );
+    selectedFriend(null);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <Friendlist friends={initialFriends} />
-        <Friend />
-        <FormAddFriend />
-        <button className="button">Tambah teman</button>
+        <Friendlist
+          friends={friends}
+          onSelected={handleSelectedFriend}
+          selectedFriend={selectedFriend}
+        />
+        {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
+        <button className="button" onClick={handleShowAddFriend}>
+          {showAddFriend ? "Tutup" : "Tambah Teman"}
+        </button>
       </div>
-      <FormSplitBill />
+      {selectedFriend && (
+        <FormSplitBill
+          selectedFriend={selectedFriend}
+          onSplitBill={handleSplitBill}
+        />
+      )}
     </div>
   );
 }

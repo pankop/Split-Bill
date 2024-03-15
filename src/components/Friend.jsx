@@ -1,22 +1,26 @@
-export default function Friend({ friend }) {
+export default function Friend({ friend, onSelected, selectedFriend }) {
+  const isSelected = selectedFriend?.id === friend.id; //dikasi tanda tanya biar tdk error ketika datanya null
+  //logic diatas dimanfaatkan untuk membuat sebuah class
   return (
-    <li>
-      <img src={friend.image} alt={friend.name} />
-      <h3>{friend.name}</h3>
-      {friend.balance < 0 && (
+    <li className={isSelected ? "selected" : ""}>
+      <img src={friend?.image} alt={friend?.name} />
+      <h3>{friend?.name}</h3>
+      {friend?.balance < 0 && (
         <p className="red">
-          Kamu berhutang Rp{Math.abs(friend.balance)} ke {friend.name}
+          Kamu berhutang Rp{Math.abs(friend?.balance)} ke {friend.name}
         </p>
       )}
 
-      {friend.balance > 0 && (
+      {friend?.balance > 0 && (
         <p className="green">
-          {friend.name} berhutang Rp{Math.abs(friend.balance)} ke Kamu{" "}
+          {friend?.name} berhutang Rp{Math.abs(friend?.balance)} ke Kamu{" "}
         </p>
       )}
 
-      {friend.balance === 0 && <p>Kamu & {friend.name} tidak ada hutang </p>}
-      <button className="button">Pilih</button>
+      {friend?.balance === 0 && <p>Kamu & {friend?.name} tidak ada hutang </p>}
+      <button className="button" onClick={() => onSelected(friend)}>
+        {isSelected ? "Tutup" : "Pilih"}
+      </button>
     </li>
   );
 }
